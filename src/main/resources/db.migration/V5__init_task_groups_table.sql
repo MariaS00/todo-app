@@ -1,4 +1,4 @@
-create table task_groups(
+create table if not exists task_groups(
                       id int primary key  auto_increment,
                       description varchar(100) not null,
                       done bit

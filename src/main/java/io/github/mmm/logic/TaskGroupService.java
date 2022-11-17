@@ -5,23 +5,16 @@ import io.github.mmm.model.projection.GroupReadModel;
 import io.github.mmm.model.projection.GroupWriteModel;
 import io.github.mmm.repo.TaskGroupRepository;
 import io.github.mmm.repo.TaskRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@RequestScope
+@AllArgsConstructor
 public class TaskGroupService {
 
     private final TaskGroupRepository repository;
     private final TaskRepository taskRepository;
-
-    public TaskGroupService(TaskGroupRepository repository, TaskRepository taskRepository) {
-        this.repository = repository;
-        this.taskRepository = taskRepository;
-    }
 
     public GroupReadModel createGroup(GroupWriteModel source) {
         return new GroupReadModel(repository.save(source.toGroup()));

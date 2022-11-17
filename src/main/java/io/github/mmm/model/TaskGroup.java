@@ -30,7 +30,6 @@ public class TaskGroup {
     private Project project;
 
     public TaskGroup(String description, boolean done, Set<Task> tasks, Project project) {
-        this.id = id;
         this.description = description;
         this.done = done;
         this.tasks = tasks;

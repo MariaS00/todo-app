@@ -1,6 +1,7 @@
 package io.github.mmm.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "project_steps")
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProjectStep {
 
     @Id

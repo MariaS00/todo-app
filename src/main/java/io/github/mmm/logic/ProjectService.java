@@ -2,29 +2,24 @@ package io.github.mmm.logic;
 
 import io.github.mmm.TaskConfigurationProperties;
 import io.github.mmm.model.Project;
-import io.github.mmm.model.Task;
-import io.github.mmm.model.TaskGroup;
 import io.github.mmm.model.projection.GroupReadModel;
+import io.github.mmm.model.projection.GroupTaskWriteModel;
+import io.github.mmm.model.projection.GroupWriteModel;
 import io.github.mmm.repo.ProjectRepository;
 import io.github.mmm.repo.TaskGroupRepository;
-import org.springframework.stereotype.Service;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@AllArgsConstructor
 public class ProjectService {
 
     private final ProjectRepository repository;
     private final TaskGroupRepository groupRepository;
     private final TaskConfigurationProperties config;
-
-    public ProjectService(ProjectRepository repository, TaskGroupRepository groupRepository, TaskConfigurationProperties config) {
-        this.repository = repository;
-        this.groupRepository = groupRepository;
-        this.config = config;
-    }
+    private final TaskGroupService taskGroupService;
 
     public List<Project> readAll() {
         return repository.findAll();
@@ -39,17 +34,21 @@ public class ProjectService {
         if (!config.getTemplate().isAllowMultipleTasks() && groupRepository.existsByDoneIsFalseAndProject_Id(projectId)) {
             throw new IllegalStateException("Only one undone group from project is allowed!");
         }
-        TaskGroup taskGroup = repository.findById(projectId).map(project -> {
-            var result = new TaskGroup();
-            result.setDescription(project.getDescription());
-            result.setTasks(project.getSteps().stream()
-                    .map(projectStep -> new Task(projectStep.getDescription(), deadline.plusDays(projectStep.getDaysToDeadline())))
-                    .collect(Collectors.toSet()));
-            result.setProject(project);
-            return groupRepository.save(result);
-        }).orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not found"));
 
-        return new GroupReadModel(taskGroup);
+        return repository.findById(projectId)
+                .map(project -> {
+                    var targetGroup = new GroupWriteModel();
+                    targetGroup.setDescription(project.getDescription());
+                    targetGroup.setTasks(project.getSteps().stream()
+                            .map(projectStep -> {
+                                var task = new GroupTaskWriteModel();
+                                task.setDescription(projectStep.getDescription());
+                                task.setDeadline(deadline.plusDays(projectStep.getDaysToDeadline()));
+                                return task;
+                            })
+                            .collect(Collectors.toSet()));
+                    return taskGroupService.createGroup(targetGroup);
+                }).orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not found"));
     }
 
 }

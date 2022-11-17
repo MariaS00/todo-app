@@ -1,5 +1,6 @@
 package io.github.mmm.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id
@@ -29,8 +31,15 @@ public class Task {
     private TaskGroup group;
 
     public Task(String description, LocalDateTime deadline) {
+        this(description, deadline, null);
+    }
+
+    public Task(String description, LocalDateTime deadline, TaskGroup group) {
         this.description = description;
         this.deadline = deadline;
+        if (group != null) {
+            this.group = group;
+        }
     }
 
     public void updateFrom(final Task source) {
@@ -38,5 +47,9 @@ public class Task {
         done = source.done;
         deadline = source.deadline;
         group = source.group;
+    }
+
+    protected TaskGroup getGroup() {
+        return group;
     }
 }
