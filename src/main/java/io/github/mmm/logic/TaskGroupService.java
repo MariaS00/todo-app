@@ -1,5 +1,6 @@
 package io.github.mmm.logic;
 
+import io.github.mmm.model.Project;
 import io.github.mmm.model.TaskGroup;
 import io.github.mmm.model.projection.GroupReadModel;
 import io.github.mmm.model.projection.GroupWriteModel;
@@ -17,7 +18,11 @@ public class TaskGroupService {
     private final TaskRepository taskRepository;
 
     public GroupReadModel createGroup(GroupWriteModel source) {
-        return new GroupReadModel(repository.save(source.toGroup()));
+        return createGroup(source, null);
+    }
+
+    public GroupReadModel createGroup(GroupWriteModel source, Project project) {
+        return new GroupReadModel(repository.save(source.toGroup(project)));
     }
 
 

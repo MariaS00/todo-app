@@ -5,6 +5,7 @@ import io.github.mmm.model.Project;
 import io.github.mmm.model.projection.GroupReadModel;
 import io.github.mmm.model.projection.GroupTaskWriteModel;
 import io.github.mmm.model.projection.GroupWriteModel;
+import io.github.mmm.model.projection.ProjectWriteModel;
 import io.github.mmm.repo.ProjectRepository;
 import io.github.mmm.repo.TaskGroupRepository;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,8 @@ public class ProjectService {
         return repository.findAll();
     }
 
-    public Project saveProject(Project source) {
-        return repository.save(source);
+    public Project saveProject(ProjectWriteModel source) {
+        return repository.save(source.toProject());
     }
 
 
@@ -46,8 +47,8 @@ public class ProjectService {
                                 task.setDeadline(deadline.plusDays(projectStep.getDaysToDeadline()));
                                 return task;
                             })
-                            .collect(Collectors.toSet()));
-                    return taskGroupService.createGroup(targetGroup);
+                            .collect(Collectors.toList()));
+                    return taskGroupService.createGroup(targetGroup, project);
                 }).orElseThrow(() -> new IllegalArgumentException("Project with id: " + projectId + " not found"));
     }
 
