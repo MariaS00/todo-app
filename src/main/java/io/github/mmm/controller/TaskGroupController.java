@@ -20,6 +20,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/groups")
+@IllegalExceptionProcessing
 @AllArgsConstructor
 public class TaskGroupController {
 
@@ -77,16 +78,6 @@ public class TaskGroupController {
     @GetMapping(value = "/groups/{id}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<Task>> getAllTaskFromGroup(@PathVariable int id) {
         return ResponseEntity.ok(taskRepository.findAllByGroup_Id(id));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    ResponseEntity<String> handleIllegalState(IllegalStateException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ModelAttribute("groups")
