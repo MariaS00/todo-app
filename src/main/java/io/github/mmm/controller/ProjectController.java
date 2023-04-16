@@ -7,6 +7,8 @@ import io.github.mmm.model.projection.ProjectWriteModel;
 import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Controller
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/projects")
 public class ProjectController {
 
@@ -25,8 +28,11 @@ public class ProjectController {
 
     @GetMapping
     String showProjects(Model model) {
-        model.addAttribute("project", new ProjectWriteModel());
-        return "projects";
+//        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+            model.addAttribute("project", new ProjectWriteModel());
+            return "projects";
+//        }
+//        return "index";
     }
 
     @PostMapping
