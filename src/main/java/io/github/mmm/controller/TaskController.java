@@ -6,6 +6,7 @@ import io.github.mmm.repo.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class TaskController {
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskRepository repository;
     private final TaskService service;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping
     ResponseEntity<Task> createTask(@RequestBody @Valid Task toSave) {
@@ -79,7 +81,9 @@ public class TaskController {
         if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        repository.findById(id).ifPresent(task -> task.setDone(!task.isDone()));
+        repository.findById(id)
+                .map(Task::toggle)
+                .ifPresent(applicationEventPublisher::publishEvent);
         return ResponseEntity.noContent().build();
     }
 }

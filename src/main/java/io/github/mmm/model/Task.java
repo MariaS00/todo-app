@@ -1,5 +1,6 @@
 package io.github.mmm.model;
 
+import io.github.mmm.model.event.TaskEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,5 +52,10 @@ public class Task {
 
     protected TaskGroup getGroup() {
         return group;
+    }
+
+    public TaskEvent toggle(){
+        this.done = !this.done;
+        return TaskEvent.changed(this);
     }
 }
